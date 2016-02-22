@@ -1,0 +1,45 @@
+{
+  "name": "morph-element",
+  "version": "0.1.0",
+  "description": "",
+  "main": "morphElement.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "webpack src/morphElement.js morphElement.js && webpack src/morphElement.js morphElement.min.js --production",
+    "test": "rm -rf ./coverage && ./node_modules/karma/bin/karma start",
+    "test-debug": "rm -rf ./coverage && ./node_modules/karma/bin/karma start --debug"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Riim/morph-element.git"
+  },
+  "author": "Dmitry Vibe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Riim/morph-element/issues"
+  },
+  "homepage": "https://github.com/Riim/morph-element#readme",
+  "devDependencies": {
+    "babel-core": "^6.5.2",
+    "babel-loader": "^6.2.3",
+    "babel-plugin-transform-flow-strip-types": "^6.5.0",
+    "babel-preset-es2015": "^6.5.0",
+    "chai": "^3.5.0",
+    "karma": "^0.13.21",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-chai": "^0.1.0",
+    "karma-coverage": "^0.5.3",
+    "karma-mocha": "^0.2.2",
+    "karma-mocha-reporter": "^1.2.0",
+    "karma-phantomjs-launcher": "^1.0.0",
+    "karma-sinon": "^1.0.4",
+    "mocha": "^2.4.5",
+    "phantomjs-prebuilt": "^2.1.4",
+    "sinon": "^1.17.3",
+    "webpack": "^1.12.13",
+    "webpack-closure-compiler": "^2.0.0",
+    "yargs": "^4.1.0"
+  }
+}
