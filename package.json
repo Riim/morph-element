@@ -1,6 +1,6 @@
 {
   "name": "morph-element",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "morphElement.js",
   "directories": {
@@ -9,7 +9,8 @@
   "scripts": {
     "build": "webpack src/morphElement.js morphElement.js && webpack src/morphElement.js morphElement.min.js --production",
     "test": "rm -rf ./coverage && ./node_modules/karma/bin/karma start",
-    "test-debug": "rm -rf ./coverage && ./node_modules/karma/bin/karma start --debug"
+    "test-debug": "rm -rf ./coverage && ./node_modules/karma/bin/karma start --debug",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
   },
   "repository": {
     "type": "git",
