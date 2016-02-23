@@ -73,7 +73,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				storeElement(child, false);
 			}
 
-			onElementRemoved(child);
+			onElementRemoved(el);
 		}
 	}
 

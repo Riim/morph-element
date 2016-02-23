@@ -539,7 +539,7 @@ describe('morphElement', () => {
 			.to.be.ok;
 	});
 
-	it('должен пропустить трансформацию элемента при возврате false из onBeforeMorphElement', function() {
+	it('должен пропускать трансформацию элемента при возврате false из onBeforeMorphElement', function() {
 		let el1 = htmlToElement(`<b class="foo">bar</b>`);
 		let el2 = htmlToElement(`<b class="bar">foo</b>`);
 
@@ -556,7 +556,7 @@ describe('morphElement', () => {
 			.to.equal('bar');
 	});
 
-	it('должен пропустить трансформацию контента элемента при возврате false из onBeforeMorphElementContent', function() {
+	it('должен пропускать трансформацию контента элемента при возврате false из onBeforeMorphElementContent', function() {
 		let el1 = htmlToElement(`<b class="foo">bar</b>`);
 		let el2 = htmlToElement(`<b class="bar">foo</b>`);
 
@@ -571,6 +571,42 @@ describe('morphElement', () => {
 
 		expect(el1.innerHTML)
 			.to.equal('bar');
+	});
+
+	it('должен вызывать onElementRemoved при удалении элемента', function() {
+		let el1 = htmlToElement('<div><b></b></div>');
+		let el2 = htmlToElement('<div></div>');
+		let b = el1.firstChild;
+		let res = false;
+
+		morphElement(el1, el2, {
+			onElementRemoved: function(el) {
+				if (el == b) {
+					res = true;
+				}
+			}
+		});
+
+		expect(res)
+			.to.be.ok;
+	});
+
+	it('должен вызывать onElementRemoved при удалении уникального элемента', function() {
+		let el1 = htmlToElement('<div><b key="foo"></b></div>');
+		let el2 = htmlToElement('<div></div>');
+		let b = el1.firstChild;
+		let res = false;
+
+		morphElement(el1, el2, {
+			onElementRemoved: function(el) {
+				if (el == b) {
+					res = true;
+				}
+			}
+		});
+
+		expect(res)
+			.to.be.ok;
 	});
 
 	it('должен трансформировать текстовые ноды', function() {

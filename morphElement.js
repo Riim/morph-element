@@ -123,7 +123,7 @@ return /******/ (function(modules) { // webpackBootstrap
 					storeElement(child, false);
 				}
 
-				onElementRemoved(child);
+				onElementRemoved(el);
 			}
 		}
 
