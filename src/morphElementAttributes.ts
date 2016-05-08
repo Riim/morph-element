@@ -1,7 +1,6 @@
-/* @flow */
 function morphElementAttributes(el: HTMLElement, toEl: HTMLElement): void {
 	let toElAttributes = toEl.attributes;
-	let foundAttributes = {};
+	let foundAttributes: { [key: string]: Object; } = {};
 
 	for (let i = toElAttributes.length; i;) {
 		let attr = toElAttributes[--i];
@@ -27,4 +26,4 @@ function morphElementAttributes(el: HTMLElement, toEl: HTMLElement): void {
 	}
 }
 
-module.exports = morphElementAttributes;
+export = morphElementAttributes;

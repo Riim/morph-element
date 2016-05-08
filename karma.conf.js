@@ -16,12 +16,12 @@ module.exports = function(config) {
 		frameworks: ['mocha', 'chai', 'sinon'],
 
 		files: [
-			'morphElement.js',
+			'dist/morphElement.umd.js',
 			'tests/*.spec.js'
 		],
 
 		preprocessors: {
-			'morphElement.js': preprocessors,
+			'dist/morphElement.umd.js': preprocessors,
 			'tests/*.spec.js': ['babel']
 		},
 

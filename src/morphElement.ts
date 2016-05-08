@@ -1,10 +1,7 @@
-/* @flow */
-let specialElementHandlers = require('./specialElementHandlers');
-let morphElementAttributes = require('./morphElementAttributes');
+import specialElementHandlers = require('./specialElementHandlers');
+import morphElementAttributes = require('./morphElementAttributes');
 
-function noop(): void {}
-
-function defaultGetElementKey(el: HTMLElement): ?string {
+function defaultGetElementKey(el: HTMLElement): string {
 	return el.getAttribute('key') || void 0;
 }
 
@@ -14,28 +11,28 @@ function defaultIsCompatibleElements(el1: HTMLElement, el2: HTMLElement): boolea
 
 function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 	contentOnly?: boolean,
-	getElementKey?: (el: HTMLElement) => ?string,
+	getElementKey?: (el: HTMLElement) => string,
 	isCompatibleElements?: (el1: HTMLElement, el2: HTMLElement) => boolean,
-	onBeforeMorphElement?: (el: HTMLElement, toEl: HTMLElement) => ?boolean,
-	onBeforeMorphElementContent?: (el: HTMLElement, toEl: HTMLElement) => ?boolean,
+	onBeforeMorphElement?: (el: HTMLElement, toEl: HTMLElement) => boolean,
+	onBeforeMorphElementContent?: (el: HTMLElement, toEl: HTMLElement) => boolean,
 	onElementRemoved?: (el: HTMLElement) => void
-}) {
+}): void {
 	if (!options) {
 		options = {};
 	}
 
-	let contentOnly = options.contentOnly === true;
+	let contentOnly = !!options.contentOnly;
 	let getElementKey = options.getElementKey || defaultGetElementKey;
 	let isCompatibleElements = options.isCompatibleElements || defaultIsCompatibleElements;
-	let onBeforeMorphElement = options.onBeforeMorphElement || noop;
-	let onBeforeMorphElementContent = options.onBeforeMorphElementContent || noop;
-	let onElementRemoved = options.onElementRemoved || noop;
+	let onBeforeMorphElement = options.onBeforeMorphElement;
+	let onBeforeMorphElementContent = options.onBeforeMorphElementContent;
+	let onElementRemoved = options.onElementRemoved;
 
 	let activeElement = document.activeElement;
-	let scrollLeft;
-	let scrollTop;
+	let scrollLeft: number;
+	let scrollTop: number;
 
-	if (activeElement.selectionStart !== void 0) {
+	if ((<HTMLInputElement>activeElement).selectionStart !== void 0) {
 		scrollLeft = activeElement.scrollLeft;
 		scrollTop = activeElement.scrollTop;
 	}
@@ -69,17 +66,19 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				el.parentNode.removeChild(el);
 			}
 
-			for (var child = (el.firstElementChild: any); child; child = (child.nextElementSibling: any)) {
+			for (let child = <HTMLElement>el.firstElementChild; child; child = <HTMLElement>child.nextElementSibling) {
 				storeElement(child, false);
 			}
 
-			onElementRemoved(el);
+			if (onElementRemoved) {
+				onElementRemoved(el);
+			}
 		}
 	}
 
 	function restoreElement(el: HTMLElement): void {
-		for (var child = (el.firstElementChild: any), nextChild; child; child = nextChild) {
-			nextChild = (child.nextElementSibling: any);
+		for (let child = <HTMLElement>el.firstElementChild, nextChild: HTMLElement; child; child = nextChild) {
+			nextChild = <HTMLElement>child.nextElementSibling;
 
 			let key = getElementKey(child);
 
@@ -101,22 +100,24 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 	}
 
 	function handleRemovedElement(el: HTMLElement): void {
-		for (var child = (el.firstElementChild: any); child; child = (child.nextElementSibling: any)) {
+		for (let child = <HTMLElement>el.firstElementChild; child; child = <HTMLElement>child.nextElementSibling) {
 			handleRemovedElement(child);
 		}
 
-		onElementRemoved(el);
+		if (onElementRemoved) {
+			onElementRemoved(el);
+		}
 	}
 
 	function _morphElement(el: HTMLElement, toEl: HTMLElement, contentOnly: boolean): void {
 		if (!contentOnly) {
-			if (onBeforeMorphElement(el, toEl) === false) {
+			if (onBeforeMorphElement && onBeforeMorphElement(el, toEl) === false) {
 				return;
 			}
 
 			morphElementAttributes(el, toEl);
 
-			if (onBeforeMorphElementContent(el, toEl) === false) {
+			if (onBeforeMorphElementContent && onBeforeMorphElementContent(el, toEl) === false) {
 				return;
 			}
 		}
@@ -128,11 +129,10 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 
 			for (let toElChild = toEl.firstChild; toElChild; toElChild = toElChild.nextSibling) {
 				let toElChildType = toElChild.nodeType;
-				let toElChildKey;
+				let toElChildKey: string;
 
 				if (toElChildType == 1) {
-					toElChild = (toElChild: any);
-					toElChildKey = getElementKey(toElChild);
+					toElChildKey = getElementKey(<HTMLElement>toElChild);
 
 					if (toElChildKey) {
 						let storedEl = storedElements[toElChildKey];
@@ -147,7 +147,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 								el.insertBefore(storedEl, elChild || null);
 							}
 
-							_morphElement(storedEl, toElChild, false);
+							_morphElement(storedEl, <HTMLElement>toElChild, false);
 							continue;
 						}
 					}
@@ -158,15 +158,14 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				for (let nextElChild = elChild; nextElChild; nextElChild = nextElChild.nextSibling) {
 					if (nextElChild.nodeType == toElChildType) {
 						if (toElChildType == 1) {
-							nextElChild = (nextElChild: any);
-							toElChild = (toElChild: any);
-
 							if (
-								getElementKey(nextElChild) === toElChildKey &&
-									(toElChildKey !== void 0 || isCompatibleElements(nextElChild, toElChild))
+								getElementKey(<HTMLElement>nextElChild) === toElChildKey && (
+									toElChildKey !== void 0 ||
+										isCompatibleElements(<HTMLElement>nextElChild, <HTMLElement>toElChild)
+								)
 							) {
 								found = true;
-								_morphElement(nextElChild, toElChild, false);
+								_morphElement(<HTMLElement>nextElChild, <HTMLElement>toElChild, false);
 							}
 						} else {
 							found = true;
@@ -188,20 +187,18 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				if (!found) {
 					switch (toElChildType) {
 						case 1: {
-							toElChild = (toElChild: any);
-
-							let unmatchedEl = document.createElement(toElChild.tagName);
+							let unmatchedEl = document.createElement((<HTMLElement>toElChild).tagName);
 
 							el.insertBefore(unmatchedEl, elChild || null);
 
 							if (toElChildKey) {
 								unmatchedElements[toElChildKey] = {
 									el: unmatchedEl,
-									toEl: toElChild
+									toEl: <HTMLElement>toElChild
 								};
 								haveNewUnmatchedElements = true;
 							} else {
-								_morphElement(unmatchedEl, toElChild, false);
+								_morphElement(unmatchedEl, <HTMLElement>toElChild, false);
 							}
 
 							break;
@@ -221,11 +218,11 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				}
 			}
 
-			for (let nextElChild; elChild; elChild = nextElChild) {
+			for (let nextElChild: Node; elChild; elChild = nextElChild) {
 				nextElChild = elChild.nextSibling;
 
 				if (elChild.nodeType == 1) {
-					storeElement((elChild: any), true);
+					storeElement(<HTMLElement>elChild, true);
 				} else {
 					el.removeChild(elChild);
 				}
@@ -256,6 +253,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 
 		for (let key in unmatchedElements) {
 			let unmatchedEl = unmatchedElements[key];
+
 			delete unmatchedElements[key];
 			_morphElement(unmatchedEl.el, unmatchedEl.toEl, false);
 
@@ -272,11 +270,11 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 	if (activeElement != document.activeElement) {
 		if (scrollLeft !== void 0) {
 			activeElement.scrollLeft = scrollLeft;
-			activeElement.scrollTop = (scrollTop: any);
+			activeElement.scrollTop = scrollTop;
 		}
 
-		activeElement.focus();
+		(<HTMLInputElement>activeElement).focus();
 	}
 }
 
-module.exports = morphElement;
+export = morphElement;

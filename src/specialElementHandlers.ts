@@ -1,5 +1,4 @@
-/* @flow */
-let specialElementHandlers = {
+let specialElementHandlers: { [key: string]: (el: HTMLElement, toEl: HTMLElement) => void; } = {
 	INPUT(el: HTMLInputElement, toEl: HTMLInputElement): void {
 		if (el.value != toEl.value) {
 			el.value = toEl.value;
@@ -25,4 +24,4 @@ let specialElementHandlers = {
 	}
 };
 
-module.exports = specialElementHandlers;
+export = specialElementHandlers;
