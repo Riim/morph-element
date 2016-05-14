@@ -1,27 +1,20 @@
-function morphElementAttributes(el: HTMLElement, toEl: HTMLElement): void {
+function morphElementAttributes(el: HTMLElement, toEl: HTMLElement, elAttributes: NamedNodeMap): void {
 	let toElAttributes = toEl.attributes;
-	let foundAttributes: { [key: string]: Object; } = {};
 
 	for (let i = toElAttributes.length; i;) {
-		let attr = toElAttributes[--i];
-		let attrName = attr.name;
-		let attrValue = attr.value;
+		let toElAttr = toElAttributes.item(--i);
+		let elAttr = elAttributes.getNamedItem(toElAttr.name);
 
-		foundAttributes[attrName] = foundAttributes;
-
-		if (el.getAttribute(attrName) !== attrValue) {
-			el.setAttribute(attrName, attrValue);
+		if (!elAttr || elAttr.value != toElAttr.value) {
+			el.setAttribute(toElAttr.name, toElAttr.value);
 		}
 	}
 
-	let elAttributes = el.attributes;
-
 	for (let i = elAttributes.length; i;) {
-		let attr = elAttributes[--i];
-		let attrName = attr.name;
+		let elAttr = elAttributes.item(--i);
 
-		if (foundAttributes[attrName] !== foundAttributes) {
-			el.removeAttribute(attrName);
+		if (!toElAttributes.getNamedItem(elAttr.name)) {
+			el.removeAttribute(elAttr.name);
 		}
 	}
 }

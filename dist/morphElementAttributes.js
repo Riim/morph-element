@@ -1,22 +1,17 @@
 "use strict";
-function morphElementAttributes(el, toEl) {
+function morphElementAttributes(el, toEl, elAttributes) {
     var toElAttributes = toEl.attributes;
-    var foundAttributes = {};
     for (var i = toElAttributes.length; i;) {
-        var attr = toElAttributes[--i];
-        var attrName = attr.name;
-        var attrValue = attr.value;
-        foundAttributes[attrName] = foundAttributes;
-        if (el.getAttribute(attrName) !== attrValue) {
-            el.setAttribute(attrName, attrValue);
+        var toElAttr = toElAttributes.item(--i);
+        var elAttr = elAttributes.getNamedItem(toElAttr.name);
+        if (!elAttr || elAttr.value != toElAttr.value) {
+            el.setAttribute(toElAttr.name, toElAttr.value);
         }
     }
-    var elAttributes = el.attributes;
     for (var i = elAttributes.length; i;) {
-        var attr = elAttributes[--i];
-        var attrName = attr.name;
-        if (foundAttributes[attrName] !== foundAttributes) {
-            el.removeAttribute(attrName);
+        var elAttr = elAttributes.item(--i);
+        if (!toElAttributes.getNamedItem(elAttr.name)) {
+            el.removeAttribute(elAttr.name);
         }
     }
 }

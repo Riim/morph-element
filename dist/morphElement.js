@@ -1,6 +1,9 @@
 "use strict";
 var specialElementHandlers = require('./specialElementHandlers');
 var morphElementAttributes = require('./morphElementAttributes');
+function defaultGetElementAttributes(el) {
+    return el.attributes;
+}
 function defaultGetElementKey(el) {
     return el.getAttribute('key') || void 0;
 }
@@ -12,6 +15,7 @@ function morphElement(el, toEl, options) {
         options = {};
     }
     var contentOnly = !!options.contentOnly;
+    var getElementAttributes = options.getElementAttributes || defaultGetElementAttributes;
     var getElementKey = options.getElementKey || defaultGetElementKey;
     var isCompatibleElements = options.isCompatibleElements || defaultIsCompatibleElements;
     var onBeforeMorphElement = options.onBeforeMorphElement;
@@ -92,7 +96,7 @@ function morphElement(el, toEl, options) {
             if (onBeforeMorphElement && onBeforeMorphElement(el, toEl) === false) {
                 return;
             }
-            morphElementAttributes(el, toEl);
+            morphElementAttributes(el, toEl, getElementAttributes(el));
             if (onBeforeMorphElementContent && onBeforeMorphElementContent(el, toEl) === false) {
                 return;
             }

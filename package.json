@@ -1,6 +1,6 @@
 {
   "name": "morph-element",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "",
   "main": "dist/morphElement.js",
   "typings": "dist/morphElement.d.ts",
@@ -31,14 +31,14 @@
     "karma-chai": "^0.1.0",
     "karma-coverage": "^1.0.0",
     "karma-mocha": "^1.0.1",
-    "karma-mocha-reporter": "^2.0.2",
+    "karma-mocha-reporter": "^2.0.3",
     "karma-phantomjs-launcher": "^1.0.0",
-    "karma-sinon": "^1.0.4",
+    "karma-sinon": "^1.0.5",
     "mocha": "^2.4.5",
     "phantomjs-prebuilt": "^2.1.7",
     "sinon": "^1.17.4",
     "typescript": "^1.8.10",
     "webpack": "^1.13.0",
-    "yargs": "^4.6.0"
+    "yargs": "^4.7.0"
   }
 }

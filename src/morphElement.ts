@@ -1,6 +1,10 @@
 import specialElementHandlers = require('./specialElementHandlers');
 import morphElementAttributes = require('./morphElementAttributes');
 
+function defaultGetElementAttributes(el: HTMLElement): NamedNodeMap {
+	return el.attributes;
+}
+
 function defaultGetElementKey(el: HTMLElement): string {
 	return el.getAttribute('key') || void 0;
 }
@@ -11,6 +15,7 @@ function defaultIsCompatibleElements(el1: HTMLElement, el2: HTMLElement): boolea
 
 function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 	contentOnly?: boolean,
+	getElementAttributes?: (el: HTMLElement) => NamedNodeMap,
 	getElementKey?: (el: HTMLElement) => string,
 	isCompatibleElements?: (el1: HTMLElement, el2: HTMLElement) => boolean,
 	onBeforeMorphElement?: (el: HTMLElement, toEl: HTMLElement) => boolean,
@@ -22,6 +27,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 	}
 
 	let contentOnly = !!options.contentOnly;
+	let getElementAttributes = options.getElementAttributes || defaultGetElementAttributes;
 	let getElementKey = options.getElementKey || defaultGetElementKey;
 	let isCompatibleElements = options.isCompatibleElements || defaultIsCompatibleElements;
 	let onBeforeMorphElement = options.onBeforeMorphElement;
@@ -115,7 +121,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				return;
 			}
 
-			morphElementAttributes(el, toEl);
+			morphElementAttributes(el, toEl, getElementAttributes(el));
 
 			if (onBeforeMorphElementContent && onBeforeMorphElementContent(el, toEl) === false) {
 				return;

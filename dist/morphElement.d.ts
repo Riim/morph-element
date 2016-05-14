@@ -1,5 +1,6 @@
 declare function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
     contentOnly?: boolean;
+    getElementAttributes?: (el: HTMLElement) => NamedNodeMap;
     getElementKey?: (el: HTMLElement) => string;
     isCompatibleElements?: (el1: HTMLElement, el2: HTMLElement) => boolean;
     onBeforeMorphElement?: (el: HTMLElement, toEl: HTMLElement) => boolean;
