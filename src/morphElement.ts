@@ -6,7 +6,7 @@ function defaultGetElementAttributes(el: HTMLElement): NamedNodeMap {
 }
 
 function defaultGetElementKey(el: HTMLElement): string {
-	return el.getAttribute('key') || void 0;
+	return el.getAttribute('key');
 }
 
 function defaultIsCompatibleElements(el1: HTMLElement, el2: HTMLElement): boolean {
@@ -166,7 +166,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 						if (toElChildType == 1) {
 							if (
 								getElementKey(<HTMLElement>nextElChild) === toElChildKey && (
-									toElChildKey !== void 0 ||
+									toElChildKey ||
 										isCompatibleElements(<HTMLElement>nextElChild, <HTMLElement>toElChild)
 								)
 							) {

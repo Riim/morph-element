@@ -61,7 +61,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return el.attributes;
 	}
 	function defaultGetElementKey(el) {
-	    return el.getAttribute('key') || void 0;
+	    return el.getAttribute('key');
 	}
 	function defaultIsCompatibleElements(el1, el2) {
 	    return el1.tagName == el2.tagName;
@@ -185,7 +185,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	                for (var nextElChild = elChild; nextElChild; nextElChild = nextElChild.nextSibling) {
 	                    if (nextElChild.nodeType == toElChildType) {
 	                        if (toElChildType == 1) {
-	                            if (getElementKey(nextElChild) === toElChildKey && (toElChildKey !== void 0 ||
+	                            if (getElementKey(nextElChild) === toElChildKey && (toElChildKey ||
 	                                isCompatibleElements(nextElChild, toElChild))) {
 	                                found = true;
 	                                _morphElement(nextElChild, toElChild, false);
@@ -321,8 +321,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	"use strict";
 	function morphElementAttributes(el, toEl, elAttributes) {
 	    var toElAttributes = toEl.attributes;
-	    for (var i = toElAttributes.length; i;) {
-	        var toElAttr = toElAttributes.item(--i);
+	    for (var i = 0, l = toElAttributes.length; i < l; i++) {
+	        var toElAttr = toElAttributes.item(i);
 	        var elAttr = elAttributes.getNamedItem(toElAttr.name);
 	        if (!elAttr || elAttr.value != toElAttr.value) {
 	            el.setAttribute(toElAttr.name, toElAttr.value);

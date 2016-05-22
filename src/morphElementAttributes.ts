@@ -1,8 +1,8 @@
 function morphElementAttributes(el: HTMLElement, toEl: HTMLElement, elAttributes: NamedNodeMap): void {
 	let toElAttributes = toEl.attributes;
 
-	for (let i = toElAttributes.length; i;) {
-		let toElAttr = toElAttributes.item(--i);
+	for (let i = 0, l = toElAttributes.length; i < l; i++) {
+		let toElAttr = toElAttributes.item(i);
 		let elAttr = elAttributes.getNamedItem(toElAttr.name);
 
 		if (!elAttr || elAttr.value != toElAttr.value) {

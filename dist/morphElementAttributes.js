@@ -1,8 +1,8 @@
 "use strict";
 function morphElementAttributes(el, toEl, elAttributes) {
     var toElAttributes = toEl.attributes;
-    for (var i = toElAttributes.length; i;) {
-        var toElAttr = toElAttributes.item(--i);
+    for (var i = 0, l = toElAttributes.length; i < l; i++) {
+        var toElAttr = toElAttributes.item(i);
         var elAttr = elAttributes.getNamedItem(toElAttr.name);
         if (!elAttr || elAttr.value != toElAttr.value) {
             el.setAttribute(toElAttr.name, toElAttr.value);
