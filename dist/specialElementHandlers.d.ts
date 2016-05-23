@@ -1,4 +1,4 @@
 declare let specialElementHandlers: {
-    [key: string]: (el: HTMLElement, toEl: HTMLElement) => void;
+    [key: string]: (el: Element, toEl: Element) => void;
 };
 export = specialElementHandlers;

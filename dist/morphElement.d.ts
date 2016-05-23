@@ -1,10 +1,10 @@
-declare function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
+declare function morphElement(el: Element, toEl: Element, options?: {
     contentOnly?: boolean;
-    getElementAttributes?: (el: HTMLElement) => NamedNodeMap;
-    getElementKey?: (el: HTMLElement) => string;
-    isCompatibleElements?: (el1: HTMLElement, el2: HTMLElement) => boolean;
-    onBeforeMorphElement?: (el: HTMLElement, toEl: HTMLElement) => boolean;
-    onBeforeMorphElementContent?: (el: HTMLElement, toEl: HTMLElement) => boolean;
-    onElementRemoved?: (el: HTMLElement) => void;
+    getElementAttributes?: (el: Element) => NamedNodeMap;
+    getElementKey?: (el: Element) => string;
+    isCompatibleElements?: (el1: Element, el2: Element) => boolean;
+    onBeforeMorphElement?: (el: Element, toEl: Element) => boolean;
+    onBeforeMorphElementContent?: (el: Element, toEl: Element) => boolean;
+    onElementRemoved?: (el: Element) => void;
 }): void;
 export = morphElement;

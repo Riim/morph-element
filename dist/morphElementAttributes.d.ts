@@ -1,2 +1,2 @@
-declare function morphElementAttributes(el: HTMLElement, toEl: HTMLElement, elAttributes: NamedNodeMap): void;
+declare function morphElementAttributes(el: Element, toEl: Element, elAttributes: NamedNodeMap): void;
 export = morphElementAttributes;

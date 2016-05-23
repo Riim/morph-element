@@ -1,6 +1,7 @@
 "use strict";
 var specialElementHandlers = require('./specialElementHandlers');
 var morphElementAttributes = require('./morphElementAttributes');
+var defaultNamespaceURI = document.documentElement.namespaceURI;
 function defaultGetElementAttributes(el) {
     return el.attributes;
 }
@@ -129,8 +130,8 @@ function morphElement(el, toEl, options) {
                 for (var nextElChild = elChild; nextElChild; nextElChild = nextElChild.nextSibling) {
                     if (nextElChild.nodeType == toElChildType) {
                         if (toElChildType == 1) {
-                            if (getElementKey(nextElChild) === toElChildKey && (toElChildKey ||
-                                isCompatibleElements(nextElChild, toElChild))) {
+                            if (getElementKey(nextElChild) === toElChildKey &&
+                                (toElChildKey || isCompatibleElements(nextElChild, toElChild))) {
                                 found = true;
                                 _morphElement(nextElChild, toElChild, false);
                             }
@@ -153,7 +154,9 @@ function morphElement(el, toEl, options) {
                 if (!found) {
                     switch (toElChildType) {
                         case 1: {
-                            var unmatchedEl = document.createElement(toElChild.tagName);
+                            var unmatchedEl = toElChild.namespaceURI == defaultNamespaceURI ?
+                                document.createElement(toElChild.tagName) :
+                                document.createElementNS(toElChild.namespaceURI, toElChild.tagName);
                             el.insertBefore(unmatchedEl, elChild || null);
                             if (toElChildKey) {
                                 unmatchedElements[toElChildKey] = {

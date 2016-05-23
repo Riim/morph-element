@@ -1,26 +1,28 @@
 import specialElementHandlers = require('./specialElementHandlers');
 import morphElementAttributes = require('./morphElementAttributes');
 
-function defaultGetElementAttributes(el: HTMLElement): NamedNodeMap {
+let defaultNamespaceURI = document.documentElement.namespaceURI;
+
+function defaultGetElementAttributes(el: Element): NamedNodeMap {
 	return el.attributes;
 }
 
-function defaultGetElementKey(el: HTMLElement): string {
+function defaultGetElementKey(el: Element): string {
 	return el.getAttribute('key');
 }
 
-function defaultIsCompatibleElements(el1: HTMLElement, el2: HTMLElement): boolean {
+function defaultIsCompatibleElements(el1: Element, el2: Element): boolean {
 	return el1.tagName == el2.tagName;
 }
 
-function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
+function morphElement(el: Element, toEl: Element, options?: {
 	contentOnly?: boolean,
-	getElementAttributes?: (el: HTMLElement) => NamedNodeMap,
-	getElementKey?: (el: HTMLElement) => string,
-	isCompatibleElements?: (el1: HTMLElement, el2: HTMLElement) => boolean,
-	onBeforeMorphElement?: (el: HTMLElement, toEl: HTMLElement) => boolean,
-	onBeforeMorphElementContent?: (el: HTMLElement, toEl: HTMLElement) => boolean,
-	onElementRemoved?: (el: HTMLElement) => void
+	getElementAttributes?: (el: Element) => NamedNodeMap,
+	getElementKey?: (el: Element) => string,
+	isCompatibleElements?: (el1: Element, el2: Element) => boolean,
+	onBeforeMorphElement?: (el: Element, toEl: Element) => boolean,
+	onBeforeMorphElementContent?: (el: Element, toEl: Element) => boolean,
+	onElementRemoved?: (el: Element) => void
 }): void {
 	if (!options) {
 		options = {};
@@ -43,13 +45,13 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 		scrollTop = activeElement.scrollTop;
 	}
 
-	let storedElements: { [key: string]: HTMLElement } = Object.create(null);
-	let someStoredElements: { [key: string]: HTMLElement } = Object.create(null);
-	let unmatchedElements: { [key: string]: { el: HTMLElement, toEl: HTMLElement } } = Object.create(null);
+	let storedElements: { [key: string]: Element } = Object.create(null);
+	let someStoredElements: { [key: string]: Element } = Object.create(null);
+	let unmatchedElements: { [key: string]: { el: Element, toEl: Element } } = Object.create(null);
 	let haveNewStoredElements = false;
 	let haveNewUnmatchedElements = false;
 
-	function storeElement(el: HTMLElement, remove: boolean): void {
+	function storeElement(el: Element, remove: boolean): void {
 		let key = getElementKey(el);
 
 		if (key) {
@@ -72,7 +74,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				el.parentNode.removeChild(el);
 			}
 
-			for (let child = <HTMLElement>el.firstElementChild; child; child = <HTMLElement>child.nextElementSibling) {
+			for (let child = el.firstElementChild; child; child = child.nextElementSibling) {
 				storeElement(child, false);
 			}
 
@@ -82,9 +84,9 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 		}
 	}
 
-	function restoreElement(el: HTMLElement): void {
-		for (let child = <HTMLElement>el.firstElementChild, nextChild: HTMLElement; child; child = nextChild) {
-			nextChild = <HTMLElement>child.nextElementSibling;
+	function restoreElement(el: Element): void {
+		for (let child = el.firstElementChild, nextChild: Element; child; child = nextChild) {
+			nextChild = child.nextElementSibling;
 
 			let key = getElementKey(child);
 
@@ -105,8 +107,8 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 		}
 	}
 
-	function handleRemovedElement(el: HTMLElement): void {
-		for (let child = <HTMLElement>el.firstElementChild; child; child = <HTMLElement>child.nextElementSibling) {
+	function handleRemovedElement(el: Element): void {
+		for (let child = el.firstElementChild; child; child = child.nextElementSibling) {
 			handleRemovedElement(child);
 		}
 
@@ -115,7 +117,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 		}
 	}
 
-	function _morphElement(el: HTMLElement, toEl: HTMLElement, contentOnly: boolean): void {
+	function _morphElement(el: Element, toEl: Element, contentOnly: boolean): void {
 		if (!contentOnly) {
 			if (onBeforeMorphElement && onBeforeMorphElement(el, toEl) === false) {
 				return;
@@ -138,7 +140,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				let toElChildKey: string;
 
 				if (toElChildType == 1) {
-					toElChildKey = getElementKey(<HTMLElement>toElChild);
+					toElChildKey = getElementKey(<Element>toElChild);
 
 					if (toElChildKey) {
 						let storedEl = storedElements[toElChildKey];
@@ -153,7 +155,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 								el.insertBefore(storedEl, elChild || null);
 							}
 
-							_morphElement(storedEl, <HTMLElement>toElChild, false);
+							_morphElement(storedEl, <Element>toElChild, false);
 							continue;
 						}
 					}
@@ -165,13 +167,11 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 					if (nextElChild.nodeType == toElChildType) {
 						if (toElChildType == 1) {
 							if (
-								getElementKey(<HTMLElement>nextElChild) === toElChildKey && (
-									toElChildKey ||
-										isCompatibleElements(<HTMLElement>nextElChild, <HTMLElement>toElChild)
-								)
+								getElementKey(<Element>nextElChild) === toElChildKey &&
+									(toElChildKey || isCompatibleElements(<Element>nextElChild, <Element>toElChild))
 							) {
 								found = true;
-								_morphElement(<HTMLElement>nextElChild, <HTMLElement>toElChild, false);
+								_morphElement(<Element>nextElChild, <Element>toElChild, false);
 							}
 						} else {
 							found = true;
@@ -193,18 +193,23 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				if (!found) {
 					switch (toElChildType) {
 						case 1: {
-							let unmatchedEl = document.createElement((<HTMLElement>toElChild).tagName);
+							let unmatchedEl = (<Element>toElChild).namespaceURI == defaultNamespaceURI ?
+								document.createElement((<Element>toElChild).tagName) :
+								document.createElementNS(
+									(<Element>toElChild).namespaceURI,
+									(<Element>toElChild).tagName
+								);
 
 							el.insertBefore(unmatchedEl, elChild || null);
 
 							if (toElChildKey) {
 								unmatchedElements[toElChildKey] = {
 									el: unmatchedEl,
-									toEl: <HTMLElement>toElChild
+									toEl: <Element>toElChild
 								};
 								haveNewUnmatchedElements = true;
 							} else {
-								_morphElement(unmatchedEl, <HTMLElement>toElChild, false);
+								_morphElement(unmatchedEl, <Element>toElChild, false);
 							}
 
 							break;
@@ -228,7 +233,7 @@ function morphElement(el: HTMLElement, toEl: HTMLElement, options?: {
 				nextElChild = elChild.nextSibling;
 
 				if (elChild.nodeType == 1) {
-					storeElement(<HTMLElement>elChild, true);
+					storeElement(<Element>elChild, true);
 				} else {
 					el.removeChild(elChild);
 				}

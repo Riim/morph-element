@@ -1,4 +1,4 @@
-let specialElementHandlers: { [key: string]: (el: HTMLElement, toEl: HTMLElement) => void; } = {
+let specialElementHandlers: { [key: string]: (el: Element, toEl: Element) => void; } = {
 	INPUT(el: HTMLInputElement, toEl: HTMLInputElement): void {
 		if (el.value != toEl.value) {
 			el.value = toEl.value;
