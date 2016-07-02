@@ -1,4 +1,4 @@
-declare function morphElement(el: Element, toEl: Element, options?: {
+declare function morphElement(el: Element, toEl: Element | NodeList, options?: {
     contentOnly?: boolean;
     getElementAttributes?: (el: Element) => NamedNodeMap;
     getElementKey?: (el: Element) => string;

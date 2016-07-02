@@ -15,7 +15,7 @@ function defaultIsCompatibleElements(el1: Element, el2: Element): boolean {
 	return el1.tagName == el2.tagName;
 }
 
-function morphElement(el: Element, toEl: Element, options?: {
+function morphElement(el: Element, toEl: Element|NodeList, options?: {
 	contentOnly?: boolean,
 	getElementAttributes?: (el: Element) => NamedNodeMap,
 	getElementKey?: (el: Element) => string,
@@ -117,15 +117,17 @@ function morphElement(el: Element, toEl: Element, options?: {
 		}
 	}
 
-	function _morphElement(el: Element, toEl: Element, contentOnly: boolean): void {
-		if (!contentOnly) {
-			if (onBeforeMorphElement && onBeforeMorphElement(el, toEl) === false) {
+	function _morphElement(el: Element, toEl: Element|NodeList, contentOnly: boolean): void {
+		let isToElNodeList = toEl instanceof NodeList;
+
+		if (!contentOnly && !isToElNodeList) {
+			if (onBeforeMorphElement && onBeforeMorphElement(el, <Element>toEl) === false) {
 				return;
 			}
 
-			morphElementAttributes(el, toEl, getElementAttributes(el));
+			morphElementAttributes(el, <Element>toEl, getElementAttributes(el));
 
-			if (onBeforeMorphElementContent && onBeforeMorphElementContent(el, toEl) === false) {
+			if (onBeforeMorphElementContent && onBeforeMorphElementContent(el, <Element>toEl) === false) {
 				return;
 			}
 		}
@@ -134,8 +136,10 @@ function morphElement(el: Element, toEl: Element, options?: {
 
 		if (elTagName != 'TEXTAREA') {
 			let elChild = el.firstChild;
+			let toElChildren = isToElNodeList ? <NodeList>toEl : (<Element>toEl).childNodes;
 
-			for (let toElChild = toEl.firstChild; toElChild; toElChild = toElChild.nextSibling) {
+			for (let i = 0, l = toElChildren.length; i < l; i++) {
+				let toElChild = toElChildren[i];
 				let toElChildType = toElChild.nodeType;
 				let toElChildKey: string;
 
@@ -240,10 +244,12 @@ function morphElement(el: Element, toEl: Element, options?: {
 			}
 		}
 
-		let specialElementHandler = specialElementHandlers[elTagName];
+		if (!isToElNodeList) {
+			let specialElementHandler = specialElementHandlers[elTagName];
 
-		if (specialElementHandler) {
-			specialElementHandler(el, toEl);
+			if (specialElementHandler) {
+				specialElementHandler(el, <Element>toEl);
+			}
 		}
 	}
 

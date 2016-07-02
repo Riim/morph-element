@@ -93,7 +93,8 @@ function morphElement(el, toEl, options) {
         }
     }
     function _morphElement(el, toEl, contentOnly) {
-        if (!contentOnly) {
+        var isToElNodeList = toEl instanceof NodeList;
+        if (!contentOnly && !isToElNodeList) {
             if (onBeforeMorphElement && onBeforeMorphElement(el, toEl) === false) {
                 return;
             }
@@ -105,7 +106,9 @@ function morphElement(el, toEl, options) {
         var elTagName = el.tagName;
         if (elTagName != 'TEXTAREA') {
             var elChild = el.firstChild;
-            for (var toElChild = toEl.firstChild; toElChild; toElChild = toElChild.nextSibling) {
+            var toElChildren = isToElNodeList ? toEl : toEl.childNodes;
+            for (var i = 0, l = toElChildren.length; i < l; i++) {
+                var toElChild = toElChildren[i];
                 var toElChildType = toElChild.nodeType;
                 var toElChildKey = void 0;
                 if (toElChildType == 1) {
@@ -194,9 +197,11 @@ function morphElement(el, toEl, options) {
                 }
             }
         }
-        var specialElementHandler = specialElementHandlers[elTagName];
-        if (specialElementHandler) {
-            specialElementHandler(el, toEl);
+        if (!isToElNodeList) {
+            var specialElementHandler = specialElementHandlers[elTagName];
+            if (specialElementHandler) {
+                specialElementHandler(el, toEl);
+            }
         }
     }
     _morphElement(el, toEl, contentOnly);
